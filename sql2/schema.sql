@@ -50,3 +50,18 @@ INSERT IGNORE INTO inscripciones (id, estudiante_id, curso_id, nota) VALUES
     (4, 3, 1, 95.00),
     (5, 3, 3, NULL),
     (6, 4, 2, NULL);
+    
+    -- Función para promediar en java con una lista 
+SELECT AVG(i.nota) AS promedio
+	FROM inscripciones i
+	JOIN estudiantes e ON i.estudiante_id = e.id
+	WHERE e.carnet = '0905-25-0004'
+	
+	-- Consulta el curso con más estudiantes inscritos
+SELECT c.nombre, COUNT(*) AS total
+	FROM inscripciones i
+	JOIN cursos c ON i.curso_id = c.id
+	GROUP BY c.nombre
+	ORDER BY total DESC
+	LIMIT 1
+	
