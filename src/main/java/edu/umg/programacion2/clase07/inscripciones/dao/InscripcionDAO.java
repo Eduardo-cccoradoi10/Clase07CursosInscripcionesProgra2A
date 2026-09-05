@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -168,9 +169,29 @@ public class InscripcionDAO {
      *    Optional.empty().
      */
     public Optional<Double> promedioDeEstudiante(String carnet) throws SQLException {
-        // TODO: completar (ver pistas arriba, especialmente el caso NULL).
+        String sql = "SELECT AVG(i.nota) AS promedio " +
+                     "FROM inscripciones i " +
+                     "JOIN estudiantes e ON i.estudiante_id = e.id " +
+                     "WHERE e.carnet = ?";
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, PASSWORD);
+             PreparedStatement statement = conexion.prepareStatement(sql)) {
+
+            statement.setString(1, carnet);
+
+            try (ResultSet resultado = statement.executeQuery()) {
+                if (resultado.next()) {
+                    Double promedio = resultado.getObject("promedio", Double.class);
+                    if (promedio == null) {
+                        return Optional.empty();
+                    }
+                    return Optional.of(promedio);
+                }
+            }
+        }
         return Optional.empty();
     }
+
 
     /**
      * Encuentra el nombre del curso con mas estudiantes inscritos.
